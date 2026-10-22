@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, Integer, Float, String, Text
+from sqlalchemy import ForeignKey, Integer, Float, LargeBinary, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..database import Base
@@ -43,7 +43,8 @@ class Mentor(Base):
     verification_status: Mapped[str] = mapped_column(String(20), default="unverified")
     verification_path: Mapped[str | None] = mapped_column(String(20), nullable=True)
     verification_document_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    verification_document_path: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    verification_document_data: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
+    verification_document_mime: Mapped[str | None] = mapped_column(String(100), nullable=True)
     verification_rejection_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     verification_submitted_at: Mapped[str | None] = mapped_column(String(40), nullable=True)
     verification_reviewed_at: Mapped[str | None] = mapped_column(String(40), nullable=True)

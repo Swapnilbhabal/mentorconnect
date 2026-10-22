@@ -1,7 +1,4 @@
-from pathlib import Path
-
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -40,12 +37,13 @@ def list_verifications(
 def download_verification_document(mentor_id: int, admin: User = Depends(require_role("admin")), db: Session = Depends(get_db)):
     """Streams the uploaded credential file. Admin-only: these are personal documents."""
     mentor = _get_mentor_or_404(db, mentor_id)
-    if not mentor.verification_document_path:
+    if not mentor.verification_document_data:
         raise HTTPException(status_code=404, detail="No document has been uploaded for this mentor.")
-    path = Path(mentor.verification_document_path)
-    if not path.exists():
-        raise HTTPException(status_code=404, detail="The stored document is missing on disk.")
-    return FileResponse(path, filename=mentor.verification_document_name or path.name)
+    return Response(
+        content=mentor.verification_document_data,
+        media_type=mentor.verification_document_mime or "application/octet-stream",
+        headers={"Content-Disposition": f'inline; filename="{mentor.verification_document_name or "document"}"'},
+    )
 
 
 @router.post("/verifications/{mentor_id}/approve", response_model=VerificationOut)

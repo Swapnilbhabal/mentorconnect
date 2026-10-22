@@ -23,8 +23,8 @@ def _safe_stem(name: str) -> str:
     return re.sub(r"[^A-Za-z0-9_-]+", "-", stem) or "document"
 
 
-async def save_verification_document(mentor_id: int, file: UploadFile) -> tuple[str, str]:
-    """Validates type/size, writes the file to disk, and returns (display_name, stored_path).
+async def save_verification_document(mentor_id: int, file: UploadFile) -> tuple[str, bytes, str]:
+    """Validates type/size and returns (display_name, file_bytes, content_type).
     Raises HTTPException(422) with a clear message on anything invalid -- never crashes."""
     content_type = (file.content_type or "").lower()
     if content_type not in settings.ALLOWED_UPLOAD_TYPES:
@@ -40,10 +40,4 @@ async def save_verification_document(mentor_id: int, file: UploadFile) -> tuple[
     if not data:
         raise HTTPException(status_code=422, detail="The uploaded file is empty.")
 
-    settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-    ext = _EXT_BY_TYPE[content_type]
-    stored_name = f"mentor{mentor_id}-{_safe_stem(file.filename or 'document')}-{uuid.uuid4().hex[:8]}{ext}"
-    stored_path = settings.UPLOAD_DIR / stored_name
-    stored_path.write_bytes(data)
-
-    return file.filename or stored_name, str(stored_path)
+    return file.filename or f"mentor{mentor_id}-document", data, content_type

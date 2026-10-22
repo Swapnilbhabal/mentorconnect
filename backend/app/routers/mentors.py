@@ -189,11 +189,12 @@ async def submit_verification(
     if mentor.verification_status == "verified":
         raise HTTPException(status_code=409, detail="This profile is already Platform Verified.")
 
-    display_name, stored_path = await save_verification_document(mentor.id, document)
+    display_name, data, content_type = await save_verification_document(mentor.id, document)
 
     mentor.verification_path = path
     mentor.verification_document_name = display_name
-    mentor.verification_document_path = stored_path
+    mentor.verification_document_data = data
+    mentor.verification_document_mime = content_type
     mentor.verification_status = "pending"
     mentor.verification_rejection_reason = None
     mentor.verification_submitted_at = utcnow().isoformat()
