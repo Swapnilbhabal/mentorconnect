@@ -19,7 +19,6 @@ async def lifespan(_: FastAPI):
     changes = auto_migrate(engine)  # adds any new columns to tables that already existed
     if changes:
         print(f"[migrate] added {len(changes)} column(s): {', '.join(changes)}")
-    settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     if settings.AUTO_SEED:
         # seed_database is idempotent (matches by email), so it's safe to call on every
         # startup -- this also means anyone upgrading from an older database automatically
