@@ -131,12 +131,6 @@ export default function AuthPage({ initialMode = "login", onAuthed, onBack }) {
           </button>
         </form>
 
-        {!registering && (
-          <p className="muted small demo-hint">
-            Trying it out? Student: <code>student@mentorconnect.edu</code> / <code>Student@123</code>. Professor:{" "}
-            <code>sarah.connor@mentorconnect.edu</code> / <code>Mentor@123</code>.
-          </p>
-        )}
       </div>
     </main>
   );
